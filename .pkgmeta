@@ -1,0 +1,19 @@
+package-as: ForTheHoard
+enable-nolib-creation: no
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
+ignore:
+  - README.md
+  - for-the-hoard.code-workspace
+  - tests
+  - tools
+  - doc
+  - docs
+  - lib
+  - scratch
+
+move-folders:
+  ForTheHoard/src/ForTheHoard: ForTheHoard
