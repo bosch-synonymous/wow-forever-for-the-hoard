@@ -1,0 +1,77 @@
+{
+  "folders": [
+    {
+      "name": "src",
+      "path": "src"
+    },
+    {
+      "name": "tests",
+      "path": "tests"
+    },
+    {
+      "name": "lib",
+      "path": "lib"
+    },
+    {
+      "name": "scratch",
+      "path": "scratch"
+    },
+    {
+      "path": "doc"
+    },
+    {
+      "path": "tools"
+    }
+  ],
+  "settings": {
+    "powershell.cwd": "src"
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "GitHub: Create repository",
+        "type": "process",
+        "command": "pwsh",
+        "args": [
+          "-File",
+          "${workspaceFolder:src}/../tools/Initialize-GitHubRepository.ps1",
+          "-Visibility",
+          "${input:githubRepositoryVisibility}"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder:src}/.."
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "GitHub: Preview repository setup",
+        "type": "process",
+        "command": "pwsh",
+        "args": [
+          "-File",
+          "${workspaceFolder:src}/../tools/Initialize-GitHubRepository.ps1",
+          "-Visibility",
+          "${input:githubRepositoryVisibility}",
+          "-WhatIf"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder:src}/.."
+        },
+        "problemMatcher": []
+      }
+    ],
+    "inputs": [
+      {
+        "id": "githubRepositoryVisibility",
+        "type": "pickString",
+        "description": "GitHub repository visibility",
+        "options": [
+          "Private",
+          "Public"
+        ],
+        "default": "Private"
+      }
+    ]
+  }
+}

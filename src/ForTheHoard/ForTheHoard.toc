@@ -1,0 +1,16 @@
+## Interface: 16001
+## Title: For the Hoard
+## Notes: Bag and bank colors and movable inventory windows for WoW Forever.
+## Author: bosch-synonymous
+## X-License: MIT
+## Version: 0.1.25
+## IconTexture: Interface\AddOns\ForTheHoard\Icon.tga
+## SavedVariables: ForTheHoardDB
+## SavedVariablesPerCharacter: ForTheHoardCharacterDB
+## OptionalDeps: Blizzard_UIPanels_Game, Blizzard_Settings, Blizzard_ColorPickerFrame
+
+Core.lua
+Colors.lua
+Movement.lua
+IndividualBags.lua
+Options.lua
