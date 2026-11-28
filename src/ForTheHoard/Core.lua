@@ -1,7 +1,7 @@
 local addonName, Addon = ...
 
 Addon.name = addonName
-Addon.version = "0.1.25"
+Addon.version = "0.1.26"
 
 function Addon.IsPublic(value)
     if type(issecretvalue) == "function" and issecretvalue(value) then

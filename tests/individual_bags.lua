@@ -69,6 +69,11 @@ local function Setup(options)
         clicks = {}, closes = {}, hooks = 0, generates = 0, updates = 0,
         reports = {}, callbacks = {}, timers = {}, cvarWrites = 0, closeAllCalls = 0,
     }
+    securecallfunction = function(callback, ...)
+        state.secureCalls = (state.secureCalls or 0) + 1
+        state.secureCallback = callback
+        return callback(...)
+    end
     local function Frame(name, bagID, role)
         return setmetatable({ name = name, bagID = bagID, role = role,
             shown = false, scripts = {}, hooks = {}, contentUpdates = 0, itemUpdates = 0, layouts = 0 },
@@ -905,6 +910,32 @@ for _, resultKind in ipairs({ "nil", "secret", "number", "string" }) do
         Check(#(selected.hooks.OnHide or {}) == (registered and 1 or 0))
         Check(state.reports["individual-script-OnHide"] ~= nil)
     end
+end
+
+-- Verify delegation through the native execution boundary. This fixture checks
+-- which function is dispatched and its arguments, not WoW's taint machinery.
+do
+    local module, state, buttons = Setup()
+    local original = module.buttons[buttons[1]].original
+    local result, id = buttons[1]:Fire("OnClick", "LeftButton", false, "tail")
+    Check(state.secureCalls == 1 and state.secureCallback == original,
+        "ordinary bag click bypassed the native execution boundary")
+    Check(result == "native-result" and id == 1 and state.clicks[1].extra[1] == "tail",
+        "native delegation lost arguments or return values")
+end
+do
+    local module, state = Setup()
+    Check(module:OpenBag(2), "separate bag failed to open")
+    Check(state.secureCalls == 1 and state.secureCallback == ContainerFrame_GenerateFrame,
+        "separate bag initialized native items directly from addon execution")
+end
+do
+    local module, state, buttons = Setup({ configure = function() securecallfunction = nil end })
+    Check(next(module.buttons) == nil, "missing execution boundary replaced native bag clicks")
+    Check(module:OpenBag(1) == false and state.generates == 0,
+        "missing execution boundary allowed insecure native item initialization")
+    buttons[1]:Fire("OnClick", "LeftButton", false)
+    Check(#state.clicks == 1, "unavailable shortcut prevented native bag interaction")
 end
 
 print("individual bags: " .. checks .. " contract checks")

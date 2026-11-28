@@ -1,6 +1,6 @@
 # For the Hoard
 
-Version 0.1.25 for WoW Forever.
+Version 0.1.26 for WoW Forever.
 
 **For the Hoard** adds colour and flexible window placement to WoW Forever's native bags and personal bank.
 

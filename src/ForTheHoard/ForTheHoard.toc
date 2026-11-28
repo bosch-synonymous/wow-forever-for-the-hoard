@@ -3,7 +3,7 @@
 ## Notes: Bag and bank colors and movable inventory windows for WoW Forever.
 ## Author: bosch-synonymous
 ## X-License: MIT
-## Version: 0.1.25
+## Version: 0.1.26
 ## IconTexture: Interface\AddOns\ForTheHoard\Icon.tga
 ## SavedVariables: ForTheHoardDB
 ## SavedVariablesPerCharacter: ForTheHoardCharacterDB

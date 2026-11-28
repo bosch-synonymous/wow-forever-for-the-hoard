@@ -193,7 +193,7 @@ function IndividualBags:OpenBag(id)
         or Read(ContainerFrame_AllowedToOpenBags) ~= true then return false end
     local preference = CombinedPreference()
     if preference ~= true and preference ~= false then return false end
-    if type(ContainerFrame_GenerateFrame) ~= "function"
+    if type(ContainerFrame_GenerateFrame) ~= "function" or type(securecallfunction) ~= "function"
         or not C_Container or type(C_Container.GetContainerNumSlots) ~= "function"
         or not self.hooks.closeBag or not self.hooks.closeAll or self.combined ~= ContainerFrameCombinedBags then return false end
     if id == 0 and not self.hooks.closeBackpack then return false end
@@ -263,7 +263,8 @@ function IndividualBags:OpenBag(id)
             or Read(combined.IsShown, combined) ~= false then error("The bag window is no longer available.") end
         self:ForgetFrame(frame)
         self.owned[frame], self.byBag[id] = { frame = frame, bag = id }, frame
-        ContainerFrame_GenerateFrame(frame, size, id)
+        -- Native item initialization writes state later read by protected item use.
+        securecallfunction(ContainerFrame_GenerateFrame, frame, size, id)
     end)
     self.changing = nil
     if not ok then
@@ -277,7 +278,8 @@ end
 
 function IndividualBags:WatchButton(button)
     if self.buttons[button] or not CanAccess(button) or type(button.GetScript) ~= "function"
-        or type(button.SetScript) ~= "function" or type(button.GetBagID) ~= "function" then return end
+        or type(button.SetScript) ~= "function" or type(button.GetBagID) ~= "function"
+        or type(securecallfunction) ~= "function" then return end
     local original = button:GetScript("OnClick")
     if type(original) ~= "function" then return end
     local wrapper = function(owner, mouseButton, down, ...)
@@ -296,7 +298,9 @@ function IndividualBags:WatchButton(button)
                 end
             end
         end
-        return original(owner, mouseButton, down, ...)
+        -- Restore the native handler's execution context before it creates or
+        -- updates shared bag state. Direct delegation propagates our taint.
+        return securecallfunction(original, owner, mouseButton, down, ...)
     end
     -- Only OnClick is intercepted. Native drag, item placement, hover and other clicks remain native.
     button:SetScript("OnClick", wrapper)
